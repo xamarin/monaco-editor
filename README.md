@@ -1,14 +1,3 @@
-How to build local release for Xamarin Interactive
-
-1. Clone `xamarin/vscode` and `xamarin/monaco-editor` next to each other.
-2. In each of them, `git checkout xamarin-interactive`.
-3. In `vscode`, run `/scripts/npm.sh install` (may need to rerun when updating `vscode`).
-4. In `monaco-editor`, run `npm install`.
-5. Hackety hack.
-6. To generate a release from `monaco-editor`, run `(cd ../vscode && gulp editor-distro) && rm -rf node_modules/monaco-editor-core/ && npm install && npm run release`.
-7. Commit changes to `release/`, push to `xamarin-interactive` branch.
-
-
 # Monaco Editor
 
 [Demo page](https://microsoft.github.io/monaco-editor/)
