@@ -9,7 +9,7 @@
 		.monaco-editor { overflow: hidden; }
 	</style>
 
-	<script type="text/javascript" src="../../release/min/vs/loader.js"></script>
+	<script type="text/javascript" src="../../release/dev/vs/loader.js"></script>
 	<script type="text/javascript">
 		var geval = eval;
 
@@ -22,15 +22,9 @@
 			};
 		};
 
-		window.MonacoEnvironment = {
-			getWorkerUrl: function(workerId, label) {
-				return '../worker-loader-proxy.js';
-			}
-		};
-
 		require.config({
 			paths: {
-				vs: "../../release/min/vs"
+				vs: "../../release/dev/vs"
 			}
 		});
 

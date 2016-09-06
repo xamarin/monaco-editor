@@ -8,8 +8,17 @@ var rimraf = require('rimraf');
 var cp = require('child_process');
 var httpServer = require('http-server');
 
-var SAMPLES_MDOC_PATH = path.join(__dirname, 'website/playground/playground.mdoc');
-var WEBSITE_GENERATED_PATH = path.join(__dirname, 'website/playground/samples');
+var WEBSITE_GENERATED_PATH = path.join(__dirname, 'website/playground/new-samples');
+var MONACO_EDITOR_VERSION = (function() {
+	var packageJsonPath = path.join(__dirname, 'package.json');
+	var packageJson = JSON.parse(fs.readFileSync(packageJsonPath).toString());
+	var version = packageJson.version;
+	if (!/\d+\.\d+\.\d+/.test(version)) {
+		console.log('unrecognized package.json version: ' + version);
+		process.exit(0);
+	}
+	return version;
+})();
 
 gulp.task('clean-release', function(cb) { rimraf('release', { maxBusyTries: 1 }, cb); });
 gulp.task('release', ['clean-release'], function() {
@@ -31,23 +40,18 @@ gulp.task('release', ['clean-release'], function() {
 			}))
 			.pipe(gulp.dest('release')),
 
+		gulp.src('CHANGELOG.md'),
+
 		// min-maps folder
 		gulp.src('node_modules/monaco-editor-core/min-maps/**/*').pipe(gulp.dest('release/min-maps')),
 
 		// other files
 		gulp.src([
 			'node_modules/monaco-editor-core/LICENSE',
-			'node_modules/monaco-editor-core/CHANGELOG.md',
 			'node_modules/monaco-editor-core/monaco.d.ts',
 			'node_modules/monaco-editor-core/ThirdPartyNotices.txt',
 			'README.md'
 		])
-		.pipe(es.through(function(data) {
-			if (/CHANGELOG\.md$/.test(data.path)) {
-				fs.writeFileSync('CHANGELOG.md', data.contents);
-			}
-			this.emit('data', data);
-		}))
 		.pipe(addPluginDTS())
 		.pipe(addPluginThirdPartyNotices())
 		.pipe(gulp.dest('release'))
@@ -72,12 +76,12 @@ function pluginStreams(destinationPath) {
 }
 
 function pluginStream(plugin, destinationPath) {
-	var contribPath = path.join(plugin.path, plugin.contrib.substr(plugin.modulePrefix.length)) + '.js';
+	var contribPath = path.join(plugin.paths.npm, plugin.contrib.substr(plugin.modulePrefix.length)) + '.js';
 	return (
 		gulp.src([
-			plugin.path + '/**/*',
+			plugin.paths.npm + '/**/*',
 			'!' + contribPath,
-			'!' + plugin.path + '/**/monaco.d.ts'
+			'!' + plugin.paths.npm + '/**/monaco.d.ts'
 		])
 		.pipe(gulp.dest(destinationPath + plugin.modulePrefix))
 	);
@@ -105,7 +109,7 @@ function addPluginContribs() {
 
 		metadata.METADATA.PLUGINS.forEach(function(plugin) {
 			allPluginsModuleIds.push(plugin.contrib);
-			var contribPath = path.join(__dirname, plugin.path, plugin.contrib.substr(plugin.modulePrefix.length)) + '.js';
+			var contribPath = path.join(__dirname, plugin.paths.npm, plugin.contrib.substr(plugin.modulePrefix.length)) + '.js';
 			var contribContents = fs.readFileSync(contribPath).toString();
 
 			var contribDefineIndex = contribContents.indexOf('define("' + plugin.contrib);
@@ -151,7 +155,7 @@ function addPluginDTS() {
 
 		var extraContent = [];
 		metadata.METADATA.PLUGINS.forEach(function(plugin) {
-			var dtsPath = path.join(plugin.path, 'monaco.d.ts');
+			var dtsPath = path.join(plugin.paths.npm, 'monaco.d.ts');
 			try {
 				extraContent.push(fs.readFileSync(dtsPath).toString());
 			} catch (err) {
@@ -181,7 +185,7 @@ function addPluginThirdPartyNotices() {
 
 		var extraContent = [];
 		metadata.METADATA.PLUGINS.forEach(function(plugin) {
-			var thirdPartyNoticePath = path.join(path.dirname(plugin.path), 'ThirdPartyNotices.txt');
+			var thirdPartyNoticePath = path.join(path.dirname(plugin.paths.npm), 'ThirdPartyNotices.txt');
 			try {
 				var thirdPartyNoticeContent = fs.readFileSync(thirdPartyNoticePath).toString();
 				thirdPartyNoticeContent = thirdPartyNoticeContent.split('\n').slice(8).join('\n');
@@ -201,154 +205,19 @@ function addPluginThirdPartyNotices() {
 
 // --- website
 
-gulp.task('clean-playground-samples', function(cb) { rimraf(WEBSITE_GENERATED_PATH, { maxBusyTries: 1 }, cb); });
-gulp.task('playground-samples', ['clean-playground-samples'], function() {
-	function toFolderName(name) {
-		var result = name.toLowerCase().replace(/[^a-z0-9\-_]/g, '-');
-
-		while (result.indexOf('--') >= 0) {
-			result = result.replace(/--/, '-');
-		}
-
-		while (result.charAt(result.length - 1) === '-') {
-			result = result.substring(result, result.length - 1);
-		}
-
-		return result;
-	}
-
-	function parse(txt) {
-		function startsWith(haystack, needle) {
-			return haystack.substring(0, needle.length) === needle;
-		}
-
-		var CHAPTER_MARKER = "=";
-		var SAMPLE_MARKER = "==";
-		var SNIPPET_MARKER = "=======================";
-
-		var lines = txt.split(/\r\n|\n|\r/);
-		var result = [];
-		var currentChapter = null;
-		var currentSample = null;
-		var currentSnippet = null;
-
-		for (var i = 0; i < lines.length; i++) {
-			var line = lines[i];
-
-			if (startsWith(line, SNIPPET_MARKER)) {
-				var snippetType = line.substring(SNIPPET_MARKER.length).trim();
-
-				if (snippetType === 'HTML' || snippetType === 'JS' || snippetType === 'CSS') {
-					currentSnippet = currentSample[snippetType];
-				} else {
-					currentSnippet = null;
-				}
-				continue;
-			}
-
-			if (startsWith(line, SAMPLE_MARKER)) {
-				currentSnippet = null;
-				currentSample = {
-					name: line.substring(SAMPLE_MARKER.length).trim(),
-					JS: [],
-					HTML: [],
-					CSS: []
-				};
-				currentChapter.samples.push(currentSample);
-				continue;
-			}
-
-			if (startsWith(line, CHAPTER_MARKER)) {
-				currentSnippet = null;
-				currentSample = null;
-				currentChapter = {
-					name: line.substring(CHAPTER_MARKER.length).trim(),
-					samples: []
-				};
-				result.push(currentChapter);
-				continue;
-			}
-
-			if (currentSnippet) {
-				currentSnippet.push(line);
-				continue;
-			}
-
-			if (line === '') {
-				continue;
-			}
-
-			// ignore inter-sample content
-			console.warn('IGNORING INTER-SAMPLE CONTENT: ' + line);
-		}
-
-		return result;
-	}
-
-	var chapters = parse(fs.readFileSync(SAMPLES_MDOC_PATH).toString());
-
-	var allSamples = [];
-
-	fs.mkdirSync(WEBSITE_GENERATED_PATH);
-
-	chapters.forEach(function(chapter) {
-		var chapterFolderName = toFolderName(chapter.name);
-
-		chapter.samples.forEach(function(sample) {
-			var sampleId = toFolderName(chapter.name + '-' + sample.name);
-
-			sample.sampleId = sampleId;
-
-			var js = [
-				'//---------------------------------------------------',
-				'// ' + chapter.name + ' > ' + sample.name,
-				'//---------------------------------------------------',
-				'',
-			].concat(sample.JS)
-			var sampleOut = {
-				id: sampleId,
-				js: js.join('\n'),
-				html: sample.HTML.join('\n'),
-				css: sample.CSS.join('\n')
-			};
-
-			allSamples.push({
-				chapter: chapter.name,
-				name: sample.name,
-				sampleId: sampleId
-			});
-
-			var content =
-`// This is a generated file. Please do not edit directly.
-var SAMPLES = this.SAMPLES || [];
-SAMPLES.push(${JSON.stringify(sampleOut)});
-`
-
-			fs.writeFileSync(path.join(WEBSITE_GENERATED_PATH, sampleId + '.js'), content);
-		});
-	});
-
-	var content =
-`// This is a generated file. Please do not edit directly.
-this.SAMPLES = [];
-this.ALL_SAMPLES = ${JSON.stringify(allSamples)};`
-
-	fs.writeFileSync(path.join(WEBSITE_GENERATED_PATH, 'all.js'), content);
-
-});
-
 gulp.task('clean-website', function(cb) { rimraf('../monaco-editor-website', { maxBusyTries: 1 }, cb); });
-gulp.task('website', ['clean-website', 'playground-samples'], function() {
+gulp.task('website', ['clean-website'], function() {
 
 	return (
 		gulp.src('website/**/*', { dot: true })
 		.pipe(es.through(function(data) {
-			if (!data.contents || !/\.(js|html)$/.test(data.path)) {
+			if (!data.contents || !/\.(html)$/.test(data.path)) {
 				return this.emit('data', data);
 			}
 
 			var contents = data.contents.toString();
-			contents = contents.replace(/\.\.\/release\/min/g, 'node_modules/monaco-editor/min');
+			contents = contents.replace(/\.\.\/release\/dev/g, 'node_modules/monaco-editor/min');
+			contents = contents.replace(/{{version}}/g, MONACO_EDITOR_VERSION);
 			// contents = contents.replace('&copy; 2016 Microsoft', '&copy; 2016 Microsoft [' + builtTime + ']');
 
 			data.contents = new Buffer(contents);
@@ -389,7 +258,106 @@ gulp.task('website', ['clean-website', 'playground-samples'], function() {
 
 });
 
-gulp.task('simpleserver', function(cb) {
+gulp.task('generate-test-samples', function() {
+	var sampleNames = fs.readdirSync(path.join(__dirname, 'test/samples'));
+	var samples = sampleNames.map(function(sampleName) {
+		var samplePath = path.join(__dirname, 'test/samples', sampleName);
+		var sampleContent = fs.readFileSync(samplePath).toString();
+		return {
+			name: sampleName,
+			content: sampleContent
+		};
+	});
+	var prefix = '//This is a generated file via gulp generate-test-samples\ndefine([], function() { return';
+	var suffix = '; });'
+	fs.writeFileSync(path.join(__dirname, 'test/samples-all.generated.js'), prefix + JSON.stringify(samples, null, '\t') + suffix );
+
+	var PLAY_SAMPLES = require(path.join(WEBSITE_GENERATED_PATH, 'all.js')).PLAY_SAMPLES;
+	var locations = [];
+	for (var i = 0; i < PLAY_SAMPLES.length; i++) {
+		var sample = PLAY_SAMPLES[i];
+		var sampleId = sample.id;
+		var samplePath = path.join(WEBSITE_GENERATED_PATH, sample.path);
+
+		var html = fs.readFileSync(path.join(samplePath, 'sample.html'));
+		var js = fs.readFileSync(path.join(samplePath, 'sample.js'));
+		var css = fs.readFileSync(path.join(samplePath, 'sample.css'));
+
+		var result = [
+			'<!DOCTYPE html>',
+			'<!-- THIS IS A GENERATED FILE VIA gulp generate-test-samples -->',
+			'<html>',
+			'<head>',
+			'	<base href="..">',
+			'	<meta http-equiv="X-UA-Compatible" content="IE=edge" />',
+			'	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />',
+			'</head>',
+			'<body>',
+			'<style>',
+			'/*----------------------------------------SAMPLE CSS START*/',
+			'',
+			css,
+			'',
+			'/*----------------------------------------SAMPLE CSS END*/',
+			'</style>',
+			'<a class="loading-opts" href="playground.generated/index.html">[&lt;&lt; BACK]</a> <br/>',
+			'THIS IS A GENERATED FILE VIA gulp generate-test-samples',
+			'',
+			'<div id="bar" style="margin-bottom: 6px;"></div>',
+			'',
+			'<div style="clear:both"></div>',
+			'<div id="outer-container" style="width:800px;height:450px;border: 1px solid grey">',
+			'<!-- ----------------------------------------SAMPLE HTML START-->',
+			'',
+			html,
+			'',
+			'<!-- ----------------------------------------SAMPLE HTML END-->',
+			'</div>',
+			'<div style="clear:both"></div>',
+			'',
+			'<script src="../metadata.js"></script>',
+			'<script src="dev-setup.js"></script>',
+			'<script>',
+			'loadEditor(function() {',
+			'/*----------------------------------------SAMPLE JS START*/',
+			'',
+			js,
+			'',
+			'/*----------------------------------------SAMPLE CSS END*/',
+			'});',
+			'</script>',
+			'</body>',
+			'</html>',
+		];
+		fs.writeFileSync(path.join(__dirname, 'test/playground.generated/' + sampleId + '.html'), result.join('\n'));
+		locations.push({
+			path: sampleId + '.html',
+			name: sample.chapter + ' &gt; ' + sample.name
+		})
+	}
+
+	var index = [
+'<!DOCTYPE html>',
+'<!-- THIS IS A GENERATED FILE VIA gulp generate-test-samples -->',
+'<html>',
+'<head>',
+'	<base href="..">',
+'</head>',
+'<body>',
+'<a class="loading-opts" href="index.html">[&lt;&lt; BACK]</a><br/>',
+'THIS IS A GENERATED FILE VIA gulp generate-test-samples<br/><br/>',
+locations.map(function(location) {
+	return '<a class="loading-opts" href="playground.generated/' + location.path + '">' + location.name + '</a>';
+}).join('<br/>\n'),
+'<script src="../metadata.js"></script>',
+'<script src="dev-setup.js"></script>',
+'</body>',
+'</html>',
+	]
+	fs.writeFileSync(path.join(__dirname, 'test/playground.generated/index.html'), index.join('\n'));
+});
+
+gulp.task('simpleserver', ['generate-test-samples'], function(cb) {
 	httpServer.createServer({ root: '../', cache: 5 }).listen(8080);
 	httpServer.createServer({ root: '../', cache: 5 }).listen(8088);
 	console.log('LISTENING on 8080 and 8088');

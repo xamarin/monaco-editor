@@ -7,23 +7,22 @@
 </head>
 <body>
 
-<h2>Monaco Editor (running from multiple sources)</h2>
-
-<a href="./index.html">[MULTIPLE SOURCES]</a>
+Jump to:
+<a class="loading-opts" href="./smoketest.html">[SMOKETEST]</a>
 &nbsp;|&nbsp;
-<a href="./index-release.html">[RELEASED]</a>
+<a class="loading-opts" href="./playground.generated/index.html">[PLAYGROUND]</a>
 &nbsp;|&nbsp;
-<a href="./smoketest-release.html">[SMOKETEST]</a>
+<a class="loading-opts" href="./mouse-fixed.html">[fixed element]</a>
 &nbsp;|&nbsp;
-<a href="./mouse-fixed.html">[fixed element]</a>
+<a class="loading-opts" href="./mouse-scrollable-body.html">[scrollable body]</a>
 &nbsp;|&nbsp;
-<a href="./mouse-scrollable-body.html">[scrollable body]</a>
+<a class="loading-opts" href="./mouse-scrollable-element.html">[scrollable element]</a>
 &nbsp;|&nbsp;
-<a href="./mouse-scrollable-element.html">[scrollable element]</a>
+<a class="loading-opts" href="./colorize.html">[colorize element]</a>
 &nbsp;|&nbsp;
-<a href="./cross-origin-broken.html">[cross origin broken]</a>
+<a class="loading-opts" href="./cross-origin-broken.html">[cross origin broken]</a>
 &nbsp;|&nbsp;
-<a href="./cross-origin-good.html">[cross origin good]</a>
+<a class="loading-opts" href="./cross-origin-good.html">[cross origin good]</a>
 <br/><br/>
 
 <div id="bar" style="margin-bottom: 6px;"></div>
@@ -34,7 +33,6 @@
 
 <script src="../metadata.js"></script>
 <script src="dev-setup.js"></script>
-<script>document.write('<script src="' + METADATA.CORE.path + '/loader.js"><'+'/script>');</script>
 <script>
 	loadEditor(function() {
 		require(['./index'], function() {});
