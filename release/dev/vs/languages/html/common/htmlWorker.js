@@ -1,6 +1,6 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.5.3(843f28241b6ffacbd2acc8882acc1ce3a74247c2)
+ * Version: 0.6.1(ada2ad77ff51ca8550cd47bdaa4520df66c9519d)
  * Released under the MIT license
  * https://github.com/Microsoft/vscode/blob/master/LICENSE.txt
  *-----------------------------------------------------------*/
@@ -471,6 +471,7 @@ define(__m[2], __M([1,0,7,6]), function (require, exports, strings, nls) {
                 'banner', 'complementary', 'contentinfo', 'form', 'main', 'navigation', 'region', 'search']
         };
         return {
+            getId: function () { return 'html5'; },
             collectTags: function (collector) { return collectTagsDefault(collector, exports.HTML_TAGS); },
             collectAttributes: function (tag, collector) {
                 collectAttributesDefault(tag, collector, exports.HTML_TAGS, globalAttributes);
@@ -495,6 +496,7 @@ define(__m[2], __M([1,0,7,6]), function (require, exports, strings, nls) {
             'ng-show', 'ng-src', 'ng-srcset', 'ng-style', 'ng-submit', 'ng-switch', 'ng-transclude', 'ng-value'
         ];
         return {
+            getId: function () { return 'angular1'; },
             collectTags: function (collector) {
                 // no extra tags
             },
@@ -539,6 +541,7 @@ define(__m[2], __M([1,0,7,6]), function (require, exports, strings, nls) {
             trans: ['android', 'ios', 'none']
         };
         return {
+            getId: function () { return 'ionic'; },
             collectTags: function (collector) { return collectTagsDefault(collector, exports.IONIC_TAGS); },
             collectAttributes: function (tag, collector) {
                 collectAttributesDefault(tag, collector, exports.IONIC_TAGS, globalAttributes);
@@ -646,10 +649,18 @@ define(__m[11], __M([1,0,12,5,13,2,4,14,7,15,8,3,16,17,18]), function (require, 
             this._tagProviders = [];
             this._tagProviders.push(htmlTags.getHTML5TagProvider());
             this.addCustomTagProviders(this._tagProviders);
+            this._providerConfiguration = null;
         }
         HTMLWorker.prototype.addCustomTagProviders = function (providers) {
             providers.push(htmlTags.getAngularTagProvider());
             providers.push(htmlTags.getIonicTagProvider());
+        };
+        HTMLWorker.prototype.getTagProviders = function () {
+            var _this = this;
+            if (this._modeId !== 'html' || !this._providerConfiguration) {
+                return this._tagProviders;
+            }
+            return this._tagProviders.filter(function (p) { return !!_this._providerConfiguration[p.getId()]; });
         };
         HTMLWorker.prototype.provideDocumentRangeFormattingEdits = function (resource, range, options) {
             return this.formatHTML(resource, range, options);
@@ -676,8 +687,8 @@ define(__m[11], __M([1,0,12,5,13,2,4,14,7,15,8,3,16,17,18]), function (require, 
                 }]);
         };
         HTMLWorker.prototype.getFormatOption = function (key, dflt) {
-            if (this.formatSettings && this.formatSettings.hasOwnProperty(key)) {
-                var value = this.formatSettings[key];
+            if (this._formatSettings && this._formatSettings.hasOwnProperty(key)) {
+                var value = this._formatSettings[key];
                 if (value !== null) {
                     return value;
                 }
@@ -695,7 +706,10 @@ define(__m[11], __M([1,0,12,5,13,2,4,14,7,15,8,3,16,17,18]), function (require, 
             return dflt;
         };
         HTMLWorker.prototype._doConfigure = function (options) {
-            this.formatSettings = options && options.format;
+            this._formatSettings = options && options.format;
+            if (options && options.suggest) {
+                this._providerConfiguration = options.suggest;
+            }
             return winjs.TPromise.as(null);
         };
         HTMLWorker.prototype.findMatchingOpenTag = function (scanner) {
@@ -735,7 +749,7 @@ define(__m[11], __M([1,0,12,5,13,2,4,14,7,15,8,3,16,17,18]), function (require, 
                 if (matchingTag) {
                     var suggestion = {
                         label: '/' + matchingTag,
-                        codeSnippet: '/' + matchingTag + closeTag,
+                        insertText: '/' + matchingTag + closeTag,
                         overwriteBefore: overwriteBefore,
                         type: 'property'
                     };
@@ -747,7 +761,7 @@ define(__m[11], __M([1,0,12,5,13,2,4,14,7,15,8,3,16,17,18]), function (require, 
                         var endIndent = model.getLineContent(endPosition.lineNumber).substring(0, endPosition.column - 1);
                         if (isWhiteSpace(startIndent) && isWhiteSpace(endIndent)) {
                             suggestion.overwriteBefore = position.column - 1; // replace from start of line
-                            suggestion.codeSnippet = startIndent + '</' + matchingTag + closeTag;
+                            suggestion.insertText = startIndent + '</' + matchingTag + closeTag;
                             suggestion.filterText = endIndent + '</' + matchingTag + closeTag;
                         }
                     }
@@ -758,14 +772,14 @@ define(__m[11], __M([1,0,12,5,13,2,4,14,7,15,8,3,16,17,18]), function (require, 
             if (scanner.getTokenType() === htmlTokenTypes_1.DELIM_END && scanner.getTokenRange().endColumn === position.column) {
                 var hasClose = collectClosingTagSuggestion(suggestions.currentWord.length + 1);
                 if (!hasClose) {
-                    this._tagProviders.forEach(function (provider) {
+                    this.getTagProviders().forEach(function (provider) {
                         provider.collectTags(function (tag, label) {
                             suggestions.suggestions.push({
                                 label: '/' + tag,
                                 overwriteBefore: suggestions.currentWord.length + 1,
-                                codeSnippet: '/' + tag + closeTag,
+                                insertText: '/' + tag + closeTag,
                                 type: 'property',
-                                documentationLabel: label,
+                                documentation: label,
                                 filterText: '</' + tag + closeTag
                             });
                         });
@@ -774,13 +788,13 @@ define(__m[11], __M([1,0,12,5,13,2,4,14,7,15,8,3,16,17,18]), function (require, 
             }
             else {
                 collectClosingTagSuggestion(suggestions.currentWord.length);
-                this._tagProviders.forEach(function (provider) {
+                this.getTagProviders().forEach(function (provider) {
                     provider.collectTags(function (tag, label) {
                         suggestions.suggestions.push({
                             label: tag,
-                            codeSnippet: tag,
+                            insertText: tag,
                             type: 'property',
-                            documentationLabel: label,
+                            documentation: label,
                             overwriteBefore: suggestions.currentWord.length
                         });
                     });
@@ -801,7 +815,7 @@ define(__m[11], __M([1,0,12,5,13,2,4,14,7,15,8,3,16,17,18]), function (require, 
                     break;
                 }
             } while (scanner.scanBack());
-            this._tagProviders.forEach(function (provider) {
+            this.getTagProviders().forEach(function (provider) {
                 provider.collectAttributes(parentTag, function (attribute, type) {
                     var codeSnippet = attribute;
                     if (type !== 'v') {
@@ -809,7 +823,7 @@ define(__m[11], __M([1,0,12,5,13,2,4,14,7,15,8,3,16,17,18]), function (require, 
                     }
                     suggestions.suggestions.push({
                         label: attribute,
-                        codeSnippet: codeSnippet,
+                        insertText: codeSnippet,
                         type: type === 'handler' ? 'function' : 'value',
                         overwriteBefore: suggestions.currentWord.length
                     });
@@ -835,11 +849,11 @@ define(__m[11], __M([1,0,12,5,13,2,4,14,7,15,8,3,16,17,18]), function (require, 
                     return;
                 }
             }
-            this._tagProviders.forEach(function (provider) {
+            this.getTagProviders().forEach(function (provider) {
                 provider.collectValues(parentTag, attribute, function (value) {
                     suggestions.suggestions.push({
                         label: value,
-                        codeSnippet: needsQuotes ? '"' + value + '"' : value,
+                        insertText: needsQuotes ? '"' + value + '"' : value,
                         type: 'unit',
                         overwriteBefore: suggestions.currentWord.length
                     });
@@ -851,9 +865,6 @@ define(__m[11], __M([1,0,12,5,13,2,4,14,7,15,8,3,16,17,18]), function (require, 
             var modeIdAtPosition = model.getModeIdAtPosition(position.lineNumber, position.column);
             if (modeIdAtPosition === this._modeId) {
                 return this.suggestHTML(resource, position);
-            }
-            else {
-                return winjs.TPromise.as([]);
             }
         };
         HTMLWorker.prototype.suggestHTML = function (resource, position) {

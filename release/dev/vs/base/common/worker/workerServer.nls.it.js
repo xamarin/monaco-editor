@@ -1,6 +1,6 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.5.3(843f28241b6ffacbd2acc8882acc1ce3a74247c2)
+ * Version: 0.6.1(ada2ad77ff51ca8550cd47bdaa4520df66c9519d)
  * Released under the MIT license
  * https://github.com/Microsoft/vscode/blob/master/LICENSE.txt
  *-----------------------------------------------------------*/
@@ -35,11 +35,6 @@ define("vs/base/common/worker/workerServer.nls.it", {
 	],
 	"vs/editor/common/config/defaultConfig": [
 		"Contenuto editor",
-	],
-	"vs/editor/common/editorCommon": [
-		"Move cursor to a logical position in the view",
-		"Cursor move argument",
-		"Argument containing mandatory \'to\' value and an optional \'inSelectionMode\' value. Value of \'to\' has to be a defined value in `CursorMoveViewPosition`.",
 	],
 	"vs/editor/common/model/textModelWithTokens": [
 		"Si è verificato un errore della modalità durante la suddivisione in token dell\'input.",
@@ -93,7 +88,7 @@ define("vs/base/common/worker/workerServer.nls.it", {
 		"Tema colori per il tipo di carattere usato nel banner.",
 		"Editore dell\'estensione Visual Studio Code.",
 		"Eventi di attivazione per l\'estensione Visual Studio Code.",
-		"Dipendenze ad altre estensioni. L\'ID di un\'estensione è sempre ${publisher}.${name}. Ad esempio: vscode.csharp.",
+		"Dipendenze ad altre estensioni. L\'identificatore di un\'estensione è sempre ${publisher}.${name}. Ad esempio: vscode.csharp.",
 		"Script eseguito prima che il pacchetto venga pubblicato come estensione Visual Studio Code.",
 		"Tutti i contributi dell\'estensione Visual Studio Code rappresentati da questo pacchetto.",
 	]

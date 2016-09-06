@@ -16,14 +16,7 @@ Browse the latest editor API at [`monaco.d.ts`](https://github.com/Microsoft/mon
 
 ## Issues
 
-Please mention the version of the editor when creating issues and the browser you're having trouble in.
-
-This repository contains only the scripts to glue things together, please create issues against the actual repositories where the source code lives:
- * [monaco-editor-core](https://github.com/Microsoft/vscode) -- (the editor itself)
- * [monaco-typescript](https://github.com/Microsoft/monaco-typescript) -- (JavaScript or TypeScript language support)
- * [monaco-css](https://github.com/Microsoft/monaco-css) -- (CSS, LESS or SCSS advanced language support)
- * [monaco-json](https://github.com/Microsoft/monaco-json) -- (JSON advanced language support)
- * [monaco-languages](https://github.com/Microsoft/monaco-languages) -- (bat, coffee script, cpp, csharp, fsharp, go, ini, jade, lua, objective-c, powershell, python, r, ruby, sql, swift, vb or xml colorizers)
+Please mention the version of the editor when creating issues and the browser you're having trouble in. Create issues in this repository.
 
 ## Known issues
 In IE, the editor must be completely surrounded in the body element, otherwise the hit testing we do for mouse operations does not work. You can inspect this using F12 and clicking on the body element and confirm that visually it surrounds the editor.
@@ -144,6 +137,11 @@ Create a Monarch tokenizer [here](https://microsoft.github.io/monaco-editor/mona
 > Q: I see the warning "Could not create web worker". What should I do?<br/>
 > A: HTML5 does not allow pages loaded on `file://` to create web workers. Please load the editor with a web server on `http://` or `https://` schemes. Please also see the cross domain case above.
 
+
+> Q: Is the editor supported in mobile browsers or mobile web app frameworks?<br/>
+> A: No.
+
+
 ## Dev
 
 ### Cheat Sheet
@@ -157,14 +155,14 @@ Create a Monarch tokenizer [here](https://microsoft.github.io/monaco-editor/mona
 * clone https://github.com/Microsoft/vscode in `$/src/vscode/` (next to this repo)
 * run `$/src/vscode> gulp watch`
 * run `$/src/monaco-editor> npm run simpleserver`
-* open http://localhost:8080/monaco-editor/test/?editor=dev
+* open [http://localhost:8080/monaco-editor/test/?editor=dev](http://localhost:8080/monaco-editor/test/?editor=dev)
 
 ### Running a plugin (e.g. monaco-typescript) from source
 
 * clone https://github.com/Microsoft/monaco-typescript in `$/src/monaco-typescript` (next to this repo)
 * run `$/src/monaco-typescript> npm run watch`
 * run `$/src/monaco-editor> npm run simpleserver`
-* open http://localhost:8080/monaco-editor/test/?editor=dev&monaco-typescript=dev
+* open [http://localhost:8080/monaco-editor/test/?editor=dev&monaco-typescript=dev](http://localhost:8080/monaco-editor/test/?editor=dev&monaco-typescript=dev)
 
 ---
 
@@ -210,11 +208,6 @@ Create a Monarch tokenizer [here](https://microsoft.github.io/monaco-editor/mona
 
 * run `$/src/monaco-editor> npm run release`
 * open http://localhost:8080/monaco-editor/website/
-
-### Generating the playground samples
-
-* edit `$/src/monaco-editor/website/playground/playground.mdoc`
-* run `$/src/monaco-editor> gulp playground-samples`
 
 ### Publishing the website
 

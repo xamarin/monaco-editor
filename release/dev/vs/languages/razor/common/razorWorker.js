@@ -1,6 +1,6 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.5.3(843f28241b6ffacbd2acc8882acc1ce3a74247c2)
+ * Version: 0.6.1(ada2ad77ff51ca8550cd47bdaa4520df66c9519d)
  * Released under the MIT license
  * https://github.com/Microsoft/vscode/blob/master/LICENSE.txt
  *-----------------------------------------------------------*/
@@ -36,6 +36,7 @@ define(__m[0], __M([1,2,3]), function (require, exports, htmlWorker) {
             span: ['asp-validation-for']
         };
         return {
+            getId: function () { return 'razor'; },
             collectTags: function (collector) {
                 // no extra tags
             },

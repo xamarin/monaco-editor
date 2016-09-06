@@ -1,6 +1,6 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.5.3(843f28241b6ffacbd2acc8882acc1ce3a74247c2)
+ * Version: 0.6.1(ada2ad77ff51ca8550cd47bdaa4520df66c9519d)
  * Released under the MIT license
  * https://github.com/Microsoft/vscode/blob/master/LICENSE.txt
  *-----------------------------------------------------------*/
@@ -35,11 +35,6 @@ define("vs/base/common/worker/workerServer.nls.fr", {
 	],
 	"vs/editor/common/config/defaultConfig": [
 		"Contenu d\'éditeur",
-	],
-	"vs/editor/common/editorCommon": [
-		"Move cursor to a logical position in the view",
-		"Cursor move argument",
-		"Argument containing mandatory \'to\' value and an optional \'inSelectionMode\' value. Value of \'to\' has to be a defined value in `CursorMoveViewPosition`.",
 	],
 	"vs/editor/common/model/textModelWithTokens": [
 		"Le mode a échoué lors de la création de jetons de l’entrée.",
@@ -93,7 +88,7 @@ define("vs/base/common/worker/workerServer.nls.fr", {
 		"Thème de couleur de la police utilisée dans la bannière.",
 		"Éditeur de l\'extension VS Code.",
 		"Événements d\'activation pour l\'extension VS Code.",
-		"Dépendances à d\'autres extensions. L\'ID d\'une extension est toujours ${publisher}.${name}. Par exemple : vscode.csharp.",
+		"Dépendances envers d\'autres extensions. L\'identificateur d\'une extension est toujours ${publisher}.${name}. Exemple : vscode.csharp.",
 		"Le script exécuté avant le package est publié en tant qu\'extension VS Code.",
 		"Toutes les contributions de l\'extension VS Code représentées par ce package.",
 	]

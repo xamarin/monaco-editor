@@ -1,12 +1,12 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.5.3(843f28241b6ffacbd2acc8882acc1ce3a74247c2)
+ * Version: 0.6.1(ada2ad77ff51ca8550cd47bdaa4520df66c9519d)
  * Released under the MIT license
  * https://github.com/Microsoft/vscode/blob/master/LICENSE.txt
  *-----------------------------------------------------------*/
 
 (function() {
-var __m = ["exports","require","vs/languages/razor/common/razorTokenTypes","vs/languages/razor/common/vsxmlTokenTypes","vs/languages/razor/common/vsxml","vs/base/common/objects","vs/editor/common/modes/abstractMode","vs/editor/common/modes/abstractState","vs/languages/razor/common/csharpTokenization","vs/languages/html/common/html","vs/base/common/errors","vs/languages/razor/common/razor","vs/editor/common/modes","vs/platform/instantiation/common/instantiation","vs/editor/common/services/modeService","vs/editor/common/modes/languageConfigurationRegistry","vs/base/common/async","vs/editor/common/services/compatWorkerService","vs/platform/workspace/common/workspace"];
+var __m = ["exports","require","vs/languages/razor/common/razorTokenTypes","vs/languages/razor/common/vsxmlTokenTypes","vs/languages/razor/common/vsxml","vs/base/common/objects","vs/editor/common/modes/abstractMode","vs/editor/common/modes/abstractState","vs/languages/razor/common/csharpTokenization","vs/languages/html/common/html","vs/base/common/errors","vs/languages/razor/common/razor","vs/editor/common/modes","vs/platform/instantiation/common/instantiation","vs/editor/common/services/modeService","vs/editor/common/modes/languageConfigurationRegistry","vs/base/common/async","vs/editor/common/services/compatWorkerService","vs/platform/workspace/common/workspace","vs/platform/configuration/common/configuration"];
 var __M = function(deps) {
   var result = [];
   for (var i = 0, len = deps.length; i < len; i++) {
@@ -786,7 +786,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(__m[11], __M([1,0,12,9,8,6,2,13,14,15,16,17,18]), function (require, exports, modes, htmlMode, csharpTokenization, abstractMode_1, razorTokenTypes, instantiation_1, modeService_1, languageConfigurationRegistry_1, async_1, compatWorkerService_1, workspace_1) {
+define(__m[11], __M([1,0,12,9,8,6,2,13,14,15,16,17,18,19]), function (require, exports, modes, htmlMode, csharpTokenization, abstractMode_1, razorTokenTypes, instantiation_1, modeService_1, languageConfigurationRegistry_1, async_1, compatWorkerService_1, workspace_1, configuration_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -823,8 +823,8 @@ define(__m[11], __M([1,0,12,9,8,6,2,13,14,15,16,17,18]), function (require, expo
     }(htmlMode.State));
     var RAZORMode = (function (_super) {
         __extends(RAZORMode, _super);
-        function RAZORMode(descriptor, instantiationService, modeService, compatWorkerService, workspaceContextService) {
-            _super.call(this, descriptor, instantiationService, modeService, compatWorkerService, workspaceContextService);
+        function RAZORMode(descriptor, instantiationService, modeService, compatWorkerService, workspaceContextService, configurationService) {
+            _super.call(this, descriptor, instantiationService, modeService, compatWorkerService, workspaceContextService, configurationService);
         }
         RAZORMode.prototype._registerSupports = function () {
             var _this = this;
@@ -899,7 +899,8 @@ define(__m[11], __M([1,0,12,9,8,6,2,13,14,15,16,17,18]), function (require, expo
             __param(1, instantiation_1.IInstantiationService),
             __param(2, modeService_1.IModeService),
             __param(3, compatWorkerService_1.ICompatWorkerService),
-            __param(4, workspace_1.IWorkspaceContextService)
+            __param(4, workspace_1.IWorkspaceContextService),
+            __param(5, configuration_1.IConfigurationService)
         ], RAZORMode);
         return RAZORMode;
     }(htmlMode.HTMLMode));

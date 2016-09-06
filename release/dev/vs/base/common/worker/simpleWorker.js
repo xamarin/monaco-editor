@@ -1,6 +1,6 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.5.3(843f28241b6ffacbd2acc8882acc1ce3a74247c2)
+ * Version: 0.6.1(ada2ad77ff51ca8550cd47bdaa4520df66c9519d)
  * Released under the MIT license
  * https://github.com/Microsoft/vscode/blob/master/LICENSE.txt
  *-----------------------------------------------------------*/
@@ -108,6 +108,9 @@ define(__m[27], __M([1,0]), function (require, exports) {
      * @return The first n elemnts from array when sorted with compare.
      */
     function top(array, compare, n) {
+        if (n === 0) {
+            return [];
+        }
         var result = array.slice(0, n).sort(compare);
         var _loop_1 = function(i, m) {
             var element = array[i];
@@ -275,6 +278,20 @@ define(__m[27], __M([1,0]), function (require, exports) {
         }, Object.create(null));
     }
     exports.index = index;
+    /**
+     * Inserts an element into an array. Returns a function which, when
+     * called, will remove that element from the array.
+     */
+    function insert(array, element) {
+        array.push(element);
+        return function () {
+            var index = array.indexOf(element);
+            if (index > -1) {
+                array.splice(index, 1);
+            }
+        };
+    }
+    exports.insert = insert;
 });
 
 define(__m[19], __M([1,0]), function (require, exports) {
@@ -340,6 +357,16 @@ define(__m[24], __M([1,0,19]), function (require, exports, diffChange_1) {
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
     'use strict';
+    function createStringSequence(a) {
+        return {
+            getLength: function () { return a.length; },
+            getElementHash: function (pos) { return a[pos]; }
+        };
+    }
+    function stringDiff(original, modified) {
+        return new LcsDiff(createStringSequence(original), createStringSequence(modified)).ComputeDiff();
+    }
+    exports.stringDiff = stringDiff;
     //
     // The code below has been ported from a C# implementation in VS
     //
@@ -1043,94 +1070,10 @@ define(__m[8], __M([1,0]), function (require, exports) {
      * A simple map to store value by a key object. Key can be any object that has toString() function to get
      * string value of the key.
      */
-    var SimpleMap = (function () {
-        function SimpleMap() {
-            this.map = Object.create(null);
-            this._size = 0;
-        }
-        Object.defineProperty(SimpleMap.prototype, "size", {
-            get: function () {
-                return this._size;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        SimpleMap.prototype.get = function (k) {
-            var value = this.peek(k);
-            return value ? value : null;
-        };
-        SimpleMap.prototype.keys = function () {
-            var keys = [];
-            for (var key in this.map) {
-                keys.push(this.map[key].key);
-            }
-            return keys;
-        };
-        SimpleMap.prototype.values = function () {
-            var values = [];
-            for (var key in this.map) {
-                values.push(this.map[key].value);
-            }
-            return values;
-        };
-        SimpleMap.prototype.entries = function () {
-            var entries = [];
-            for (var key in this.map) {
-                entries.push(this.map[key]);
-            }
-            return entries;
-        };
-        SimpleMap.prototype.set = function (k, t) {
-            if (this.get(k)) {
-                return false; // already present!
-            }
-            this.push(k, t);
-            return true;
-        };
-        SimpleMap.prototype.delete = function (k) {
-            var value = this.get(k);
-            if (value) {
-                this.pop(k);
-                return value;
-            }
-            return null;
-        };
-        SimpleMap.prototype.has = function (k) {
-            return !!this.get(k);
-        };
-        SimpleMap.prototype.clear = function () {
-            this.map = Object.create(null);
-            this._size = 0;
-        };
-        SimpleMap.prototype.push = function (key, value) {
-            var entry = { key: key, value: value };
-            this.map[key.toString()] = entry;
-            this._size++;
-        };
-        SimpleMap.prototype.pop = function (k) {
-            delete this.map[k.toString()];
-            this._size--;
-        };
-        SimpleMap.prototype.peek = function (k) {
-            var entry = this.map[k.toString()];
-            return entry ? entry.value : null;
-        };
-        return SimpleMap;
-    }());
-    exports.SimpleMap = SimpleMap;
-    /**
-     * A simple Map<T> that optionally allows to set a limit of entries to store. Once the limit is hit,
-     * the cache will remove the entry that was last recently added. Or, if a ratio is provided below 1,
-     * all elements will be removed until the ratio is full filled (e.g. 0.75 to remove 25% of old elements).
-     */
     var LinkedMap = (function () {
-        function LinkedMap(limit, ratio) {
-            if (limit === void 0) { limit = Number.MAX_VALUE; }
-            if (ratio === void 0) { ratio = 1; }
-            this.limit = limit;
+        function LinkedMap() {
             this.map = Object.create(null);
             this._size = 0;
-            this.ratio = limit * ratio;
         }
         Object.defineProperty(LinkedMap.prototype, "size", {
             get: function () {
@@ -1139,7 +1082,99 @@ define(__m[8], __M([1,0]), function (require, exports) {
             enumerable: true,
             configurable: true
         });
-        LinkedMap.prototype.set = function (key, value) {
+        LinkedMap.prototype.get = function (k) {
+            var value = this.peek(k);
+            return value ? value : null;
+        };
+        LinkedMap.prototype.getOrSet = function (k, t) {
+            var res = this.get(k);
+            if (res) {
+                return res;
+            }
+            this.set(k, t);
+            return t;
+        };
+        LinkedMap.prototype.keys = function () {
+            var keys = [];
+            for (var key in this.map) {
+                keys.push(this.map[key].key);
+            }
+            return keys;
+        };
+        LinkedMap.prototype.values = function () {
+            var values = [];
+            for (var key in this.map) {
+                values.push(this.map[key].value);
+            }
+            return values;
+        };
+        LinkedMap.prototype.entries = function () {
+            var entries = [];
+            for (var key in this.map) {
+                entries.push(this.map[key]);
+            }
+            return entries;
+        };
+        LinkedMap.prototype.set = function (k, t) {
+            if (this.get(k)) {
+                return false; // already present!
+            }
+            this.push(k, t);
+            return true;
+        };
+        LinkedMap.prototype.delete = function (k) {
+            var value = this.get(k);
+            if (value) {
+                this.pop(k);
+                return value;
+            }
+            return null;
+        };
+        LinkedMap.prototype.has = function (k) {
+            return !!this.get(k);
+        };
+        LinkedMap.prototype.clear = function () {
+            this.map = Object.create(null);
+            this._size = 0;
+        };
+        LinkedMap.prototype.push = function (key, value) {
+            var entry = { key: key, value: value };
+            this.map[key.toString()] = entry;
+            this._size++;
+        };
+        LinkedMap.prototype.pop = function (k) {
+            delete this.map[k.toString()];
+            this._size--;
+        };
+        LinkedMap.prototype.peek = function (k) {
+            var entry = this.map[k.toString()];
+            return entry ? entry.value : null;
+        };
+        return LinkedMap;
+    }());
+    exports.LinkedMap = LinkedMap;
+    /**
+     * A simple Map<T> that optionally allows to set a limit of entries to store. Once the limit is hit,
+     * the cache will remove the entry that was last recently added. Or, if a ratio is provided below 1,
+     * all elements will be removed until the ratio is full filled (e.g. 0.75 to remove 25% of old elements).
+     */
+    var BoundedLinkedMap = (function () {
+        function BoundedLinkedMap(limit, ratio) {
+            if (limit === void 0) { limit = Number.MAX_VALUE; }
+            if (ratio === void 0) { ratio = 1; }
+            this.limit = limit;
+            this.map = Object.create(null);
+            this._size = 0;
+            this.ratio = limit * ratio;
+        }
+        Object.defineProperty(BoundedLinkedMap.prototype, "size", {
+            get: function () {
+                return this._size;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        BoundedLinkedMap.prototype.set = function (key, value) {
             if (this.map[key]) {
                 return false; // already present!
             }
@@ -1150,11 +1185,19 @@ define(__m[8], __M([1,0]), function (require, exports) {
             }
             return true;
         };
-        LinkedMap.prototype.get = function (key) {
+        BoundedLinkedMap.prototype.get = function (key) {
             var entry = this.map[key];
             return entry ? entry.value : null;
         };
-        LinkedMap.prototype.delete = function (key) {
+        BoundedLinkedMap.prototype.getOrSet = function (k, t) {
+            var res = this.get(k);
+            if (res) {
+                return res;
+            }
+            this.set(k, t);
+            return t;
+        };
+        BoundedLinkedMap.prototype.delete = function (key) {
             var entry = this.map[key];
             if (entry) {
                 this.map[key] = void 0;
@@ -1175,16 +1218,16 @@ define(__m[8], __M([1,0]), function (require, exports) {
             }
             return null;
         };
-        LinkedMap.prototype.has = function (key) {
+        BoundedLinkedMap.prototype.has = function (key) {
             return !!this.map[key];
         };
-        LinkedMap.prototype.clear = function () {
+        BoundedLinkedMap.prototype.clear = function () {
             this.map = Object.create(null);
             this._size = 0;
             this.head = null;
             this.tail = null;
         };
-        LinkedMap.prototype.push = function (entry) {
+        BoundedLinkedMap.prototype.push = function (entry) {
             if (this.head) {
                 // [A]-[B] = [A]-[B]->[X]
                 entry.prev = this.head;
@@ -1197,7 +1240,7 @@ define(__m[8], __M([1,0]), function (require, exports) {
             this.map[entry.key] = entry;
             this._size++;
         };
-        LinkedMap.prototype.trim = function () {
+        BoundedLinkedMap.prototype.trim = function () {
             if (this.tail) {
                 // Remove all elements until ratio is reached
                 if (this.ratio < this.limit) {
@@ -1228,9 +1271,9 @@ define(__m[8], __M([1,0]), function (require, exports) {
                 }
             }
         };
-        return LinkedMap;
+        return BoundedLinkedMap;
     }());
-    exports.LinkedMap = LinkedMap;
+    exports.BoundedLinkedMap = BoundedLinkedMap;
     /**
      * A subclass of Map<T> that makes an entry the MRU entry as soon
      * as it is being accessed. In combination with the limit for the
@@ -1254,7 +1297,7 @@ define(__m[8], __M([1,0]), function (require, exports) {
             return null;
         };
         return LRUCache;
-    }(LinkedMap));
+    }(BoundedLinkedMap));
     exports.LRUCache = LRUCache;
 });
 
@@ -1281,10 +1324,10 @@ define(__m[3], __M([1,0]), function (require, exports) {
         _isMacintosh = (process.platform === 'darwin');
         _isLinux = (process.platform === 'linux');
         _isRootUser = !_isWindows && (process.getuid() === 0);
-        var vscode_nls_config = process.env['VSCODE_NLS_CONFIG'];
-        if (vscode_nls_config) {
+        var rawNlsConfig = process.env['VSCODE_NLS_CONFIG'];
+        if (rawNlsConfig) {
             try {
-                var nlsConfig = JSON.parse(vscode_nls_config);
+                var nlsConfig = JSON.parse(rawNlsConfig);
                 var resolved = nlsConfig.availableLanguages['*'];
                 _locale = nlsConfig.locale;
                 // VSCode's default language is 'en'
@@ -1511,7 +1554,7 @@ define(__m[4], __M([1,0,8]), function (require, exports, map_1) {
     function endsWith(haystack, needle) {
         var diff = haystack.length - needle.length;
         if (diff > 0) {
-            return haystack.lastIndexOf(needle) === diff;
+            return haystack.indexOf(needle, diff) === diff;
         }
         else if (diff === 0) {
             return haystack === needle;
@@ -1566,7 +1609,7 @@ define(__m[4], __M([1,0,8]), function (require, exports, map_1) {
      */
     exports.canNormalize = typeof (''.normalize) === 'function';
     var nonAsciiCharactersPattern = /[^\u0000-\u0080]/;
-    var normalizedCache = new map_1.LinkedMap(10000); // bounded to 10000 elements
+    var normalizedCache = new map_1.BoundedLinkedMap(10000); // bounded to 10000 elements
     function normalizeNFC(str) {
         if (!exports.canNormalize || !str) {
             return str;
@@ -2171,7 +2214,7 @@ define(__m[25], __M([1,0,4,8]), function (require, exports, strings, map_1) {
     var SubstringMatching = exports.SubstringMatching;
     exports.fuzzyContiguousFilter = or(exports.matchesPrefix, matchesCamelCase, matchesContiguousSubString);
     var fuzzySeparateFilter = or(exports.matchesPrefix, matchesCamelCase, matchesSubString);
-    var fuzzyRegExpCache = new map_1.LinkedMap(10000); // bounded to 10000 elements
+    var fuzzyRegExpCache = new map_1.BoundedLinkedMap(10000); // bounded to 10000 elements
     function matchesFuzzy(word, wordToMatchAgainst, enableSeparateSubstringMatching) {
         if (enableSeparateSubstringMatching === void 0) { enableSeparateSubstringMatching = false; }
         if (typeof word !== 'string' || typeof wordToMatchAgainst !== 'string') {
@@ -2766,6 +2809,19 @@ define(__m[13], __M([1,0,3]), function (require, exports, platform) {
             this._formatted = null;
             this._fsPath = null;
         }
+        URI.isUri = function (thing) {
+            if (thing instanceof URI) {
+                return true;
+            }
+            if (!thing) {
+                return false;
+            }
+            return typeof thing.authority === 'string'
+                && typeof thing.fragment === 'string'
+                && typeof thing.path === 'string'
+                && typeof thing.query === 'string'
+                && typeof thing.scheme === 'string';
+        };
         Object.defineProperty(URI.prototype, "scheme", {
             /**
              * scheme is the 'http' part of 'http://www.msft.com/some/path?query#fragment'.
@@ -2829,7 +2885,7 @@ define(__m[13], __M([1,0,3]), function (require, exports, platform) {
             get: function () {
                 if (!this._fsPath) {
                     var value;
-                    if (this._authority && this.scheme === 'file') {
+                    if (this._authority && this._path && this.scheme === 'file') {
                         // unc path: file://shares/c$/far/boo
                         value = "//" + this._authority + this._path;
                     }
@@ -7147,6 +7203,17 @@ define(__m[14], __M([1,0,26]), function (require, exports, callbackList_1) {
         return emitter.event;
     }
     exports.fromPromise = fromPromise;
+    function once(event) {
+        return function (listener, thisArgs, disposables) {
+            if (thisArgs === void 0) { thisArgs = null; }
+            var result = event(function (e) {
+                result.dispose();
+                return listener.call(thisArgs, e);
+            }, null, disposables);
+            return result;
+        };
+    }
+    exports.once = once;
     function mapEvent(event, map) {
         return function (listener, thisArgs, disposables) {
             if (thisArgs === void 0) { thisArgs = null; }
@@ -7246,6 +7313,10 @@ define(__m[14], __M([1,0,26]), function (require, exports, callbackList_1) {
  *--------------------------------------------------------------------------------------------*/
 define(__m[15], __M([1,0,14]), function (require, exports, event_1) {
     'use strict';
+    var shortcutEvent = Object.freeze(function (callback, context) {
+        var handle = setTimeout(callback.bind(context), 0);
+        return { dispose: function () { clearTimeout(handle); } };
+    });
     var CancellationToken;
     (function (CancellationToken) {
         CancellationToken.None = Object.freeze({
@@ -7254,13 +7325,9 @@ define(__m[15], __M([1,0,14]), function (require, exports, event_1) {
         });
         CancellationToken.Cancelled = Object.freeze({
             isCancellationRequested: true,
-            onCancellationRequested: event_1.default.None
+            onCancellationRequested: shortcutEvent
         });
     })(CancellationToken = exports.CancellationToken || (exports.CancellationToken = {}));
-    var shortcutEvent = Object.freeze(function (callback, context) {
-        var handle = setTimeout(callback.bind(context), 0);
-        return { dispose: function () { clearTimeout(handle); } };
-    });
     var MutableToken = (function () {
         function MutableToken() {
             this._isCancelled = false;
@@ -7417,9 +7484,12 @@ define(__m[31], __M([1,0,5,3,2,15,10]), function (require, exports, errors, plat
     exports.toThenable = toThenable;
     function asWinJsPromise(callback) {
         var source = new cancellation_1.CancellationTokenSource();
-        return new winjs_base_1.TPromise(function (resolve, reject) {
+        return new winjs_base_1.TPromise(function (resolve, reject, progress) {
             var item = callback(source.token);
-            if (isThenable(item)) {
+            if (winjs_base_1.TPromise.is(item)) {
+                item.then(resolve, reject, progress);
+            }
+            else if (isThenable(item)) {
                 item.then(resolve, reject);
             }
             else {
@@ -7433,9 +7503,16 @@ define(__m[31], __M([1,0,5,3,2,15,10]), function (require, exports, errors, plat
     /**
      * Hook a cancellation token to a WinJS Promise
      */
-    function wireCancellationToken(token, promise) {
-        token.onCancellationRequested(function () { return promise.cancel(); });
-        return promise;
+    function wireCancellationToken(token, promise, resolveAsUndefinedWhenCancelled) {
+        var subscription = token.onCancellationRequested(function () { return promise.cancel(); });
+        if (resolveAsUndefinedWhenCancelled) {
+            promise = promise.then(undefined, function (err) {
+                if (!errors.isPromiseCanceledError(err)) {
+                    return winjs_base_1.TPromise.wrapError(err);
+                }
+            });
+        }
+        return always(promise, function () { return subscription.dispose(); });
     }
     exports.wireCancellationToken = wireCancellationToken;
     /**
@@ -8662,11 +8739,9 @@ define(__m[34], __M([1,0,33,3]), function (require, exports, nls, defaultPlatfor
         CommonKeybindings.SHIFT_DELETE = KeyMod.Shift | KeyCode.Delete;
         CommonKeybindings.CTRLCMD_BACKSPACE = KeyMod.CtrlCmd | KeyCode.Backspace;
         CommonKeybindings.UP_ARROW = KeyCode.UpArrow;
-        CommonKeybindings.WINCTRL_P = KeyMod.WinCtrl | KeyCode.KEY_P;
         CommonKeybindings.SHIFT_UP_ARROW = KeyMod.Shift | KeyCode.UpArrow;
         CommonKeybindings.CTRLCMD_UP_ARROW = KeyMod.CtrlCmd | KeyCode.UpArrow;
         CommonKeybindings.DOWN_ARROW = KeyCode.DownArrow;
-        CommonKeybindings.WINCTRL_N = KeyMod.WinCtrl | KeyCode.KEY_N;
         CommonKeybindings.SHIFT_DOWN_ARROW = KeyMod.Shift | KeyCode.DownArrow;
         CommonKeybindings.CTRLCMD_DOWN_ARROW = KeyMod.CtrlCmd | KeyCode.DownArrow;
         CommonKeybindings.LEFT_ARROW = KeyCode.LeftArrow;
@@ -9372,11 +9447,11 @@ define(__m[38], __M([1,0,13,2,7,25,29,21,18,16,17,30]), function (require, expor
         BaseEditorSimpleWorker.prototype._suggestFiltered = function (model, position, wordDefRegExp) {
             var value = this._suggestUnfiltered(model, position, wordDefRegExp);
             // filter suggestions
-            return [{
-                    currentWord: value.currentWord,
-                    suggestions: value.suggestions.filter(function (element) { return !!filters_1.fuzzyContiguousFilter(value.currentWord, element.label); }),
-                    incomplete: value.incomplete
-                }];
+            return {
+                currentWord: value.currentWord,
+                suggestions: value.suggestions.filter(function (element) { return !!filters_1.fuzzyContiguousFilter(value.currentWord, element.label); }),
+                incomplete: value.incomplete
+            };
         };
         BaseEditorSimpleWorker.prototype._suggestUnfiltered = function (model, position, wordDefRegExp) {
             var currentWord = model.getWordUntilPosition(position, wordDefRegExp).word;
@@ -9387,7 +9462,7 @@ define(__m[38], __M([1,0,13,2,7,25,29,21,18,16,17,30]), function (require, expor
                 return {
                     type: 'text',
                     label: word,
-                    codeSnippet: word,
+                    insertText: word,
                     noAutoAccept: true
                 };
             });

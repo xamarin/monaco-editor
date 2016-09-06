@@ -1,12 +1,12 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.5.3(843f28241b6ffacbd2acc8882acc1ce3a74247c2)
+ * Version: 0.6.1(ada2ad77ff51ca8550cd47bdaa4520df66c9519d)
  * Released under the MIT license
  * https://github.com/Microsoft/vscode/blob/master/LICENSE.txt
  *-----------------------------------------------------------*/
 
 (function() {
-var __m = ["exports","require","vs/languages/html/common/htmlEmptyTagsShared","vs/languages/html/common/htmlTokenTypes","vs/platform/workspace/common/workspace","vs/base/common/strings","vs/languages/html/common/html","vs/editor/common/modes","vs/base/common/arrays","vs/editor/common/modes/abstractState","vs/editor/common/services/modeService","vs/platform/instantiation/common/instantiation","vs/editor/common/modes/languageConfigurationRegistry","vs/editor/common/modes/supports/tokenizationSupport","vs/base/common/async","vs/editor/common/services/compatWorkerService","vs/editor/common/modes/abstractMode"];
+var __m = ["exports","require","vs/languages/html/common/htmlEmptyTagsShared","vs/languages/html/common/htmlTokenTypes","vs/platform/configuration/common/configuration","vs/base/common/strings","vs/languages/html/common/html","vs/editor/common/modes","vs/editor/common/modes/abstractMode","vs/base/common/arrays","vs/editor/common/services/modeService","vs/platform/instantiation/common/instantiation","vs/editor/common/modes/languageConfigurationRegistry","vs/editor/common/modes/supports/tokenizationSupport","vs/base/common/async","vs/editor/common/services/compatWorkerService","vs/platform/workspace/common/workspace","vs/editor/common/modes/abstractState"];
 var __M = function(deps) {
   var result = [];
   for (var i = 0, len = deps.length; i < len; i++) {
@@ -18,7 +18,7 @@ var __M = function(deps) {
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[2], __M([1,0,8]), function (require, exports, arrays) {
+define(__m[2], __M([1,0,9]), function (require, exports, arrays) {
     "use strict";
     exports.EMPTY_ELEMENTS = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr'];
     function isEmptyElement(e) {
@@ -67,7 +67,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(__m[6], __M([1,0,7,16,9,10,11,3,2,12,13,14,15,4]), function (require, exports, modes, abstractMode_1, abstractState_1, modeService_1, instantiation_1, htmlTokenTypes, htmlEmptyTagsShared_1, languageConfigurationRegistry_1, tokenizationSupport_1, async_1, compatWorkerService_1, workspace_1) {
+define(__m[6], __M([1,0,7,8,17,10,11,3,2,12,13,14,15,16,4]), function (require, exports, modes, abstractMode_1, abstractState_1, modeService_1, instantiation_1, htmlTokenTypes, htmlEmptyTagsShared_1, languageConfigurationRegistry_1, tokenizationSupport_1, async_1, compatWorkerService_1, workspace_1, configuration_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -319,13 +319,22 @@ define(__m[6], __M([1,0,7,16,9,10,11,3,2,12,13,14,15,4]), function (require, exp
     exports.State = State;
     var HTMLMode = (function (_super) {
         __extends(HTMLMode, _super);
-        function HTMLMode(descriptor, instantiationService, modeService, compatWorkerService, workspaceContextService) {
+        function HTMLMode(descriptor, instantiationService, modeService, compatWorkerService, workspaceContextService, configurationService) {
+            var _this = this;
             _super.call(this, descriptor.id, compatWorkerService);
             this.workspaceContextService = workspaceContextService;
+            this.configurationService = configurationService;
             this._modeWorkerManager = this._createModeWorkerManager(descriptor, instantiationService);
             this.modeService = modeService;
             this.tokenizationSupport = new tokenizationSupport_1.TokenizationSupport(this, this, true);
-            this.configSupport = this;
+            if (this.compatWorkerService && this.compatWorkerService.isInMainThread) {
+                var updateConfiguration_1 = function () {
+                    var opts = configurationService.getConfiguration('html');
+                    _this._configureWorker(opts);
+                };
+                configurationService.onDidUpdateConfiguration(function (e) { return updateConfiguration_1(); });
+                updateConfiguration_1();
+            }
             this._registerSupports();
         }
         HTMLMode.prototype._registerSupports = function () {
@@ -415,17 +424,6 @@ define(__m[6], __M([1,0,7,16,9,10,11,3,2,12,13,14,15,4]), function (require, exp
             }
             return null;
         };
-        HTMLMode.prototype.configure = function (options) {
-            if (!this.compatWorkerService) {
-                return;
-            }
-            if (this.compatWorkerService.isInMainThread) {
-                return this._configureWorker(options);
-            }
-            else {
-                return this._worker(function (w) { return w._doConfigure(options); });
-            }
-        };
         HTMLMode.prototype._configureWorker = function (options) {
             return this._worker(function (w) { return w._doConfigure(options); });
         };
@@ -491,7 +489,8 @@ define(__m[6], __M([1,0,7,16,9,10,11,3,2,12,13,14,15,4]), function (require, exp
             __param(1, instantiation_1.IInstantiationService),
             __param(2, modeService_1.IModeService),
             __param(3, compatWorkerService_1.ICompatWorkerService),
-            __param(4, workspace_1.IWorkspaceContextService)
+            __param(4, workspace_1.IWorkspaceContextService),
+            __param(5, configuration_1.IConfigurationService)
         ], HTMLMode);
         return HTMLMode;
     }(abstractMode_1.CompatMode));

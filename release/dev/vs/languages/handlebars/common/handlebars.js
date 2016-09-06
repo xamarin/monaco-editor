@@ -1,12 +1,12 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.5.3(843f28241b6ffacbd2acc8882acc1ce3a74247c2)
+ * Version: 0.6.1(ada2ad77ff51ca8550cd47bdaa4520df66c9519d)
  * Released under the MIT license
  * https://github.com/Microsoft/vscode/blob/master/LICENSE.txt
  *-----------------------------------------------------------*/
 
 (function() {
-var __m = ["vs/languages/handlebars/common/handlebarsTokenTypes","exports","require","vs/languages/handlebars/common/handlebars","vs/editor/common/modes","vs/languages/html/common/html","vs/platform/workspace/common/workspace","vs/editor/common/services/modeService","vs/editor/common/modes/languageConfigurationRegistry","vs/editor/common/modes/abstractMode","vs/base/common/async","vs/editor/common/services/compatWorkerService","vs/platform/instantiation/common/instantiation"];
+var __m = ["vs/languages/handlebars/common/handlebarsTokenTypes","exports","require","vs/languages/handlebars/common/handlebars","vs/editor/common/modes","vs/languages/html/common/html","vs/platform/instantiation/common/instantiation","vs/platform/configuration/common/configuration","vs/editor/common/modes/languageConfigurationRegistry","vs/editor/common/modes/abstractMode","vs/base/common/async","vs/editor/common/services/compatWorkerService","vs/platform/workspace/common/workspace","vs/editor/common/services/modeService"];
 var __M = function(deps) {
   var result = [];
   for (var i = 0, len = deps.length; i < len; i++) {
@@ -40,7 +40,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-define(__m[3], __M([2,1,4,5,0,12,7,8,9,10,11,6]), function (require, exports, modes, htmlMode, handlebarsTokenTypes, instantiation_1, modeService_1, languageConfigurationRegistry_1, abstractMode_1, async_1, compatWorkerService_1, workspace_1) {
+define(__m[3], __M([2,1,4,5,0,6,13,8,9,10,11,12,7]), function (require, exports, modes, htmlMode, handlebarsTokenTypes, instantiation_1, modeService_1, languageConfigurationRegistry_1, abstractMode_1, async_1, compatWorkerService_1, workspace_1, configuration_1) {
     /*---------------------------------------------------------------------------------------------
      *  Copyright (c) Microsoft Corporation. All rights reserved.
      *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -121,8 +121,8 @@ define(__m[3], __M([2,1,4,5,0,12,7,8,9,10,11,6]), function (require, exports, mo
     exports.HandlebarsState = HandlebarsState;
     var HandlebarsMode = (function (_super) {
         __extends(HandlebarsMode, _super);
-        function HandlebarsMode(descriptor, instantiationService, modeService, compatWorkerService, workspaceContextService) {
-            _super.call(this, descriptor, instantiationService, modeService, compatWorkerService, workspaceContextService);
+        function HandlebarsMode(descriptor, instantiationService, modeService, compatWorkerService, workspaceContextService, configurationService) {
+            _super.call(this, descriptor, instantiationService, modeService, compatWorkerService, workspaceContextService, configurationService);
         }
         HandlebarsMode.prototype._registerSupports = function () {
             var _this = this;
@@ -194,7 +194,8 @@ define(__m[3], __M([2,1,4,5,0,12,7,8,9,10,11,6]), function (require, exports, mo
             __param(1, instantiation_1.IInstantiationService),
             __param(2, modeService_1.IModeService),
             __param(3, compatWorkerService_1.ICompatWorkerService),
-            __param(4, workspace_1.IWorkspaceContextService)
+            __param(4, workspace_1.IWorkspaceContextService),
+            __param(5, configuration_1.IConfigurationService)
         ], HandlebarsMode);
         return HandlebarsMode;
     }(htmlMode.HTMLMode));

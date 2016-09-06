@@ -1,6 +1,6 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.5.3(843f28241b6ffacbd2acc8882acc1ce3a74247c2)
+ * Version: 0.6.1(ada2ad77ff51ca8550cd47bdaa4520df66c9519d)
  * Released under the MIT license
  * https://github.com/Microsoft/vscode/blob/master/LICENSE.txt
  *-----------------------------------------------------------*/
@@ -35,11 +35,6 @@ define("vs/base/common/worker/workerServer.nls.zh-tw", {
 	],
 	"vs/editor/common/config/defaultConfig": [
 		"編輯器內容",
-	],
-	"vs/editor/common/editorCommon": [
-		"Move cursor to a logical position in the view",
-		"Cursor move argument",
-		"Argument containing mandatory \'to\' value and an optional \'inSelectionMode\' value. Value of \'to\' has to be a defined value in `CursorMoveViewPosition`.",
 	],
 	"vs/editor/common/model/textModelWithTokens": [
 		"將輸入語彙基元化時，模式失敗。",
