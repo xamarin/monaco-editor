@@ -1,7 +1,7 @@
 {
   "name": "monaco-editor",
   "private": true,
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "A browser based code editor",
   "author": "Microsoft Corporation",
   "license": "MIT",
@@ -19,11 +19,12 @@
     "event-stream": "^3.3.2",
     "gulp": "^3.9.1",
     "http-server": "^0.9.0",
+    "monaco-css": "1.2.1",
     "monaco-editor-core": "file:../../../vscode/out-monaco-editor-core",
+    "monaco-json": "1.1.1",
+    "monaco-html": "1.1.0",
     "monaco-languages": "file:../../../monaco-languages",
-    "monaco-css": "1.1.4",
-    "monaco-json": "1.0.7",
-    "monaco-typescript": "0.6.1",
+    "monaco-typescript": "2.0.1",
     "rimraf": "^2.5.2"
   }
 }
