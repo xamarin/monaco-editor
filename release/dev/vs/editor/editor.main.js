@@ -1,6 +1,6 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.7.3(5313293414329e2e6ac60f8f620f14972e8f63b1)
+ * Version: 0.7.3(c57e8973f27bfc694abef5f87bff4596a10294ce)
  * Released under the MIT license
  * https://github.com/Microsoft/vscode/blob/master/LICENSE.txt
  *-----------------------------------------------------------*/
@@ -73189,12 +73189,12 @@ define(__m[458/*vs/editor/contrib/parameterHints/browser/parameterHintsWidget*/]
             var onNextClick = event_2.stop(event_2.domEvent(next, 'click'));
             onNextClick(this.next, this, this.disposables);
             this.overloads = dom.append(wrapper, $('.overloads'));
-            var body = dom.append(wrapper, $('.body'));
-            this.signature = dom.append(body, $('.signature'));
-            this.docs = $('.docs');
-            this.scrollbar = new scrollableElement_1.DomScrollableElement(this.docs, { canUseTranslate3d: false });
+            var body = $('.body');
+            this.scrollbar = new scrollableElement_1.DomScrollableElement(body, { canUseTranslate3d: false });
             this.disposables.push(this.scrollbar);
-            body.appendChild(this.scrollbar.getDomNode());
+            wrapper.appendChild(this.scrollbar.getDomNode());
+            this.signature = dom.append(body, $('.signature'));
+            this.docs = dom.append(body, $('.docs'));
             this.currentSignature = 0;
             this.editor.addContentWidget(this);
             this.hide();
@@ -73251,6 +73251,9 @@ define(__m[458/*vs/editor/contrib/parameterHints/browser/parameterHintsWidget*/]
             this.signature.innerHTML = '';
             this.docs.innerHTML = '';
             var signature = this.hints.signatures[this.currentSignature];
+            if (!signature) {
+                return;
+            }
             var code = dom.append(this.signature, $('.code'));
             var hasParameters = signature.parameters.length > 0;
             var fontInfo = this.editor.getConfiguration().fontInfo;

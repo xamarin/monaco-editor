@@ -1,8 +1,5 @@
 {
 	"keys": {
-		"vs/editor/common/config/defaultConfig": [
-			"editorViewAccessibleLabel"
-		],
 		"vs/editor/contrib/quickOpen/browser/gotoLine": [
 			"gotoLineLabelValidLineAndColumn",
 			"gotoLineLabelValidLine",
@@ -33,6 +30,12 @@
 			"quickCommandActionInput",
 			"QuickCommandAction.label"
 		],
+		"vs/editor/common/config/defaultConfig": [
+			"editorViewAccessibleLabel"
+		],
+		"vs/editor/common/modes/modesRegistry": [
+			"plainText.alias"
+		],
 		"vs/platform/extensions/common/extensionsRegistry": [
 			"extensionDescription.empty",
 			"extensionDescription.publisher",
@@ -57,8 +60,10 @@
 			"vscode.extension.scripts.prepublish",
 			"vscode.extension.contributes"
 		],
-		"vs/editor/common/modes/modesRegistry": [
-			"plainText.alias"
+		"vs/editor/contrib/clipboard/browser/clipboard": [
+			"actions.clipboard.cutLabel",
+			"actions.clipboard.copyLabel",
+			"actions.clipboard.pasteLabel"
 		],
 		"vs/editor/common/services/modeServiceImpl": [
 			"vscode.extension.contributes.languages",
@@ -80,11 +85,6 @@
 			"opt.mimetypes",
 			"invalid"
 		],
-		"vs/editor/contrib/clipboard/browser/clipboard": [
-			"actions.clipboard.cutLabel",
-			"actions.clipboard.copyLabel",
-			"actions.clipboard.pasteLabel"
-		],
 		"vs/editor/contrib/comment/common/comment": [
 			"comment.line",
 			"comment.line.add",
@@ -104,13 +104,6 @@
 			"actions.previewDecl.label",
 			"multipleResults"
 		],
-		"vs/editor/contrib/hover/browser/hover": [
-			"showHover"
-		],
-		"vs/editor/contrib/inPlaceReplace/common/inPlaceReplace": [
-			"InPlaceReplaceAction.previous.label",
-			"InPlaceReplaceAction.next.label"
-		],
 		"vs/editor/contrib/gotoError/browser/gotoError": [
 			"quickfix.multiple.label",
 			"quickfix.single.label",
@@ -118,9 +111,12 @@
 			"markerAction.next.label",
 			"markerAction.previous.label"
 		],
-		"vs/editor/contrib/carretOperations/common/carretOperations": [
-			"carret.moveLeft",
-			"carret.moveRight"
+		"vs/editor/contrib/hover/browser/hover": [
+			"showHover"
+		],
+		"vs/editor/contrib/inPlaceReplace/common/inPlaceReplace": [
+			"InPlaceReplaceAction.previous.label",
+			"InPlaceReplaceAction.next.label"
 		],
 		"vs/editor/contrib/linesOperations/common/linesOperations": [
 			"lines.copyUp",
@@ -162,18 +158,21 @@
 			"rename.failed",
 			"rename.label"
 		],
+		"vs/editor/contrib/smartSelect/common/smartSelect": [
+			"smartSelect.grow",
+			"smartSelect.shrink"
+		],
 		"vs/editor/contrib/smartSelect/common/jumpToBracket": [
 			"smartSelect.jumpBracket"
+		],
+		"vs/editor/contrib/suggest/browser/suggestController": [
+			"suggest.trigger.label"
 		],
 		"vs/editor/contrib/toggleTabFocusMode/common/toggleTabFocusMode": [
 			"toggle.tabfocusmode"
 		],
 		"vs/editor/contrib/toggleWordWrap/common/toggleWordWrap": [
 			"toggle.wordwrap"
-		],
-		"vs/editor/contrib/smartSelect/common/smartSelect": [
-			"smartSelect.grow",
-			"smartSelect.shrink"
 		],
 		"vs/editor/contrib/folding/browser/folding": [
 			"unfoldAction.label",
@@ -204,12 +203,13 @@
 			"toggleRenderWhitespace",
 			"toggleRenderControlCharacters"
 		],
+		"vs/editor/contrib/carretOperations/common/carretOperations": [
+			"carret.moveLeft",
+			"carret.moveRight"
+		],
 		"vs/base/parts/quickopen/browser/quickOpenModel": [
 			"quickOpenAriaLabelEntry",
 			"quickOpenAriaLabel"
-		],
-		"vs/editor/contrib/suggest/browser/suggestController": [
-			"suggest.trigger.label"
 		],
 		"vs/platform/message/common/message": [
 			"close",
@@ -225,16 +225,16 @@
 			"sev.warning",
 			"sev.info"
 		],
+		"vs/platform/keybinding/browser/keybindingServiceImpl": [
+			"unboundCommands",
+			"first.chord",
+			"missing.chord"
+		],
 		"vs/platform/extensions/common/abstractExtensionService": [
 			"unknownDep",
 			"failedDep1",
 			"failedDep2",
 			"activationError"
-		],
-		"vs/platform/keybinding/browser/keybindingServiceImpl": [
-			"unboundCommands",
-			"first.chord",
-			"missing.chord"
 		],
 		"vs/editor/contrib/find/common/findController": [
 			"startFindAction",
@@ -249,6 +249,9 @@
 			"moveSelectionToPreviousFindMatch",
 			"selectAllOccurencesOfFindMatch",
 			"changeAll.label"
+		],
+		"vs/editor/contrib/referenceSearch/browser/referencesController": [
+			"labelLoading"
 		],
 		"vs/editor/contrib/find/browser/findWidget": [
 			"label.find",
@@ -266,6 +269,12 @@
 			"label.matchesLocation",
 			"label.noResults"
 		],
+		"vs/editor/contrib/zoneWidget/browser/peekViewWidget": [
+			"label.close"
+		],
+		"vs/editor/contrib/hover/browser/modesContentHover": [
+			"modesContentHover.loading"
+		],
 		"vs/base/browser/ui/actionbar/actionbar": [
 			{
 				"key": "titleLabel",
@@ -274,15 +283,6 @@
 					"action keybinding"
 				]
 			}
-		],
-		"vs/editor/contrib/referenceSearch/browser/referencesController": [
-			"labelLoading"
-		],
-		"vs/editor/contrib/zoneWidget/browser/peekViewWidget": [
-			"label.close"
-		],
-		"vs/editor/contrib/hover/browser/modesContentHover": [
-			"modesContentHover.loading"
 		],
 		"vs/editor/contrib/parameterHints/browser/parameterHintsWidget": [
 			"hint"
@@ -297,6 +297,17 @@
 		],
 		"vs/editor/contrib/rename/browser/renameInputField": [
 			"renameAriaLabel"
+		],
+		"vs/editor/contrib/suggest/browser/suggestWidget": [
+			"readMore",
+			"suggestionWithDetailsAriaLabel",
+			"suggestionAriaLabel",
+			"goback",
+			"suggestWidget.loading",
+			"suggestWidget.noSuggestions",
+			"suggestionAriaAccepted",
+			"ariaCurrentSuggestionWithDetails",
+			"ariaCurrentSuggestion"
 		],
 		"vs/editor/common/services/bulkEdit": [
 			"conflict"
@@ -357,17 +368,6 @@
 		"vs/base/parts/tree/browser/treeDefaults": [
 			"collapse"
 		],
-		"vs/editor/contrib/suggest/browser/suggestWidget": [
-			"readMore",
-			"suggestionWithDetailsAriaLabel",
-			"suggestionAriaLabel",
-			"goback",
-			"suggestWidget.loading",
-			"suggestWidget.noSuggestions",
-			"suggestionAriaAccepted",
-			"ariaCurrentSuggestionWithDetails",
-			"ariaCurrentSuggestion"
-		],
 		"vs/base/common/keybinding": [
 			"windowsKey",
 			"ctrlKey.long",
@@ -389,9 +389,6 @@
 			"invalid.title",
 			"invalid.properties"
 		],
-		"vs/editor/common/controller/cursor": [
-			"corrupt.commands"
-		],
 		"vs/base/browser/ui/findinput/findInput": [
 			"regexDescription",
 			"wordsDescription",
@@ -412,6 +409,9 @@
 			"noResults",
 			"peekView.alternateTitle"
 		],
+		"vs/editor/common/controller/cursor": [
+			"corrupt.commands"
+		],
 		"vs/base/browser/ui/aria/aria": [
 			"repeated"
 		],
@@ -424,9 +424,6 @@
 		]
 	},
 	"messages": {
-		"vs/editor/common/config/defaultConfig": [
-			"Editor content"
-		],
 		"vs/editor/contrib/quickOpen/browser/gotoLine": [
 			"Go to line {0} and column {1}",
 			"Go to line {0}",
@@ -457,6 +454,12 @@
 			"Type the name of an action you want to execute",
 			"Command Palette"
 		],
+		"vs/editor/common/config/defaultConfig": [
+			"Editor content"
+		],
+		"vs/editor/common/modes/modesRegistry": [
+			"Plain Text"
+		],
 		"vs/platform/extensions/common/extensionsRegistry": [
 			"Got empty extension description",
 			"property `{0}` is mandatory and must be of type `string`",
@@ -481,8 +484,10 @@
 			"Script executed before the package is published as a VS Code extension.",
 			"All contributions of the VS Code extension represented by this package."
 		],
-		"vs/editor/common/modes/modesRegistry": [
-			"Plain Text"
+		"vs/editor/contrib/clipboard/browser/clipboard": [
+			"Cut",
+			"Copy",
+			"Paste"
 		],
 		"vs/editor/common/services/modeServiceImpl": [
 			"Contributes language declarations.",
@@ -504,11 +509,6 @@
 			"property `{0}` can be omitted and must be of type `string[]`",
 			"Invalid `contributes.{0}`. Expected an array."
 		],
-		"vs/editor/contrib/clipboard/browser/clipboard": [
-			"Cut",
-			"Copy",
-			"Paste"
-		],
 		"vs/editor/contrib/comment/common/comment": [
 			"Toggle Line Comment",
 			"Add Line Comment",
@@ -528,13 +528,6 @@
 			"Peek Definition",
 			"Click to show the {0} definitions found."
 		],
-		"vs/editor/contrib/hover/browser/hover": [
-			"Show Hover"
-		],
-		"vs/editor/contrib/inPlaceReplace/common/inPlaceReplace": [
-			"Replace with Previous Value",
-			"Replace with Next Value"
-		],
 		"vs/editor/contrib/gotoError/browser/gotoError": [
 			"Suggested fixes: ",
 			"Suggested fix: ",
@@ -542,9 +535,12 @@
 			"Go to Next Error or Warning",
 			"Go to Previous Error or Warning"
 		],
-		"vs/editor/contrib/carretOperations/common/carretOperations": [
-			"Move Carret Left",
-			"Move Carret Right"
+		"vs/editor/contrib/hover/browser/hover": [
+			"Show Hover"
+		],
+		"vs/editor/contrib/inPlaceReplace/common/inPlaceReplace": [
+			"Replace with Previous Value",
+			"Replace with Next Value"
 		],
 		"vs/editor/contrib/linesOperations/common/linesOperations": [
 			"Copy Line Up",
@@ -586,18 +582,21 @@
 			"Sorry, rename failed to execute.",
 			"Rename Symbol"
 		],
+		"vs/editor/contrib/smartSelect/common/smartSelect": [
+			"Expand Select",
+			"Shrink Select"
+		],
 		"vs/editor/contrib/smartSelect/common/jumpToBracket": [
 			"Go to Bracket"
+		],
+		"vs/editor/contrib/suggest/browser/suggestController": [
+			"Trigger Suggest"
 		],
 		"vs/editor/contrib/toggleTabFocusMode/common/toggleTabFocusMode": [
 			"Toggle Use of Tab Key for Setting Focus"
 		],
 		"vs/editor/contrib/toggleWordWrap/common/toggleWordWrap": [
 			"View: Toggle Word Wrap"
-		],
-		"vs/editor/contrib/smartSelect/common/smartSelect": [
-			"Expand Select",
-			"Shrink Select"
 		],
 		"vs/editor/contrib/folding/browser/folding": [
 			"Unfold",
@@ -623,12 +622,13 @@
 			"Toggle Render Whitespace",
 			"Toggle Control Characters"
 		],
+		"vs/editor/contrib/carretOperations/common/carretOperations": [
+			"Move Carret Left",
+			"Move Carret Right"
+		],
 		"vs/base/parts/quickopen/browser/quickOpenModel": [
 			"{0}, picker",
 			"picker"
-		],
-		"vs/editor/contrib/suggest/browser/suggestController": [
-			"Trigger Suggest"
 		],
 		"vs/platform/message/common/message": [
 			"Close",
@@ -644,16 +644,16 @@
 			"Warning",
 			"Info"
 		],
+		"vs/platform/keybinding/browser/keybindingServiceImpl": [
+			"Here are other available commands: ",
+			"({0}) was pressed. Waiting for second key of chord...",
+			"The key combination ({0}, {1}) is not a command."
+		],
 		"vs/platform/extensions/common/abstractExtensionService": [
 			"Extension `{1}` failed to activate. Reason: unknown dependency `{0}`.",
 			"Extension `{1}` failed to activate. Reason: dependency `{0}` failed to activate.",
 			"Extension `{0}` failed to activate. Reason: more than 10 levels of dependencies (most likely a dependency loop).",
 			"Activating extension `{0}` failed: {1}."
-		],
-		"vs/platform/keybinding/browser/keybindingServiceImpl": [
-			"Here are other available commands: ",
-			"({0}) was pressed. Waiting for second key of chord...",
-			"The key combination ({0}, {1}) is not a command."
 		],
 		"vs/editor/contrib/find/common/findController": [
 			"Find",
@@ -668,6 +668,9 @@
 			"Move Last Selection To Previous Find Match",
 			"Select All Occurences of Find Match",
 			"Change All Occurrences"
+		],
+		"vs/editor/contrib/referenceSearch/browser/referencesController": [
+			"Loading..."
 		],
 		"vs/editor/contrib/find/browser/findWidget": [
 			"Find",
@@ -685,17 +688,14 @@
 			"{0} of {1}",
 			"No results"
 		],
-		"vs/base/browser/ui/actionbar/actionbar": [
-			"{0} ({1})"
-		],
-		"vs/editor/contrib/referenceSearch/browser/referencesController": [
-			"Loading..."
-		],
 		"vs/editor/contrib/zoneWidget/browser/peekViewWidget": [
 			"Close"
 		],
 		"vs/editor/contrib/hover/browser/modesContentHover": [
 			"Loading..."
+		],
+		"vs/base/browser/ui/actionbar/actionbar": [
+			"{0} ({1})"
 		],
 		"vs/editor/contrib/parameterHints/browser/parameterHintsWidget": [
 			"{0}, hint"
@@ -710,6 +710,17 @@
 		],
 		"vs/editor/contrib/rename/browser/renameInputField": [
 			"Rename input. Type new name and press Enter to commit."
+		],
+		"vs/editor/contrib/suggest/browser/suggestWidget": [
+			"Read More...{0}",
+			"{0}, suggestion, has details",
+			"{0}, suggestion",
+			"Go back",
+			"Loading...",
+			"No suggestions.",
+			"{0}, accepted",
+			"{0}, suggestion, has details",
+			"{0}, suggestion"
 		],
 		"vs/editor/common/services/bulkEdit": [
 			"These files have changed in the meantime: {0}"
@@ -770,17 +781,6 @@
 		"vs/base/parts/tree/browser/treeDefaults": [
 			"Collapse"
 		],
-		"vs/editor/contrib/suggest/browser/suggestWidget": [
-			"Read More...{0}",
-			"{0}, suggestion, has details",
-			"{0}, suggestion",
-			"Go back",
-			"Loading...",
-			"No suggestions.",
-			"{0}, accepted",
-			"{0}, suggestion, has details",
-			"{0}, suggestion"
-		],
 		"vs/base/common/keybinding": [
 			"Windows",
 			"Control",
@@ -802,9 +802,6 @@
 			"'configuration.title' must be a string",
 			"'configuration.properties' must be an object"
 		],
-		"vs/editor/common/controller/cursor": [
-			"Unexpected exception while executing command."
-		],
 		"vs/base/browser/ui/findinput/findInput": [
 			"Use Regular Expression",
 			"Match Whole Word",
@@ -824,6 +821,9 @@
 			"References",
 			"No results",
 			"References"
+		],
+		"vs/editor/common/controller/cursor": [
+			"Unexpected exception while executing command."
 		],
 		"vs/base/browser/ui/aria/aria": [
 			"{0} (occurred again)"
